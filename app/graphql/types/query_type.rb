@@ -2,6 +2,11 @@ QueryType = GraphQL::ObjectType.define do
   name "Query"
   description "The query root for this schema"
 
+  field :movies do
+    type MovieType
+    resolve -> (obj, args, ctx) { Movie.all }
+  end  
+
   field :movie do
     type MovieType
     argument :id, !types.ID

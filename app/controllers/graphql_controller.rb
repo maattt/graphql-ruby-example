@@ -1,4 +1,9 @@
 class GraphqlController < ApplicationController
+  def query
+    result = Schema.execute params[:query]
+    render json: result
+  end
+
   def execute
     variables = ensure_hash(params[:variables])
     query = params[:query]

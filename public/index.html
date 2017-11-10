@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>Test de graphQL</title>
+    <script src="graphql.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  </head>
+  <body>
+    <h1>Plein de films !</h1>
+    <ul id="movies-list"></ul>
+    <div id="actor"></div>
+    <script>
+      $.ajax({
+        url: "graphql",
+        method: "post",
+        data: { "query": "{ movie(id: 1) { title, year, actors { id, name }}}" }
+      }).done(function(data) {
+        var movie = data.data.movie;
+        var actors_list = "avec ";
+        for (i = 0; i < movie.actors.length -1; i++) {
+          actors_list += actor_link(movie.actors[i]) + ", ";
+        }
+        actors_list += actor_link(movie.actors[movie.actors.length-1]) + ", ...";
+        retour = '<li>' + movie.year + ' - ' + movie.title + " " + actors_list + '</li>';
+        $("#movies-list").append(retour);
+
+        $("a.actor-link").click(function() {
+          $.ajax({
+            url: "graphql",
+            method: "post",
+            data: { "query": "{ actor(id: " + $(this).attr("data-id") + ") { name, bio }}" }
+          }).done(function(data) {
+            var actor = data.data.actor;
+            $("#actor").html('<h2>' + actor.name + '</h2><p>' + actor.bio + '/<p>');
+          });
+          return false;
+        });
+      });
+
+      var actor_link = function(actor) {
+        return '<a href="actors/' + actor.id + '" data-id="' + actor.id + '" class="actor-link">' + actor.name + '</a>';
+      }
+    </script>
+  </body>
+</html>
